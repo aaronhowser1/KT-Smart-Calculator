@@ -20,22 +20,18 @@ fun main() {
 fun calculate(input: String): Int {
 
     var sum = 0
-    var addingNext = true
 
-    for (i in input.indices) {
+    for (group in input.split(' ')) {
 
-        val char = input[i]
-        if (char == ' ') continue
-        if (char == '-') {
-            addingNext = !addingNext
-            continue
+        val amountMinus = group.count {it == '-'}
+        val addingNext = amountMinus % 2 == 0
+
+        val numberString = group.filter {it.isDigit()}
+
+        if (numberString.isNotBlank()) {
+            val number = numberString.toInt()
+            if (addingNext) sum += number else sum -= number
         }
-
-        if (char.isDigit()) {
-            if (addingNext) sum += char.digitToInt() else sum -= char.digitToInt()
-            addingNext = true
-        }
-
     }
 
     return sum
