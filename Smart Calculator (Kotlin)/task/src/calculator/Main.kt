@@ -21,18 +21,9 @@ fun calculate(input: String): Int {
 
     var sum = 0
 
-    for (group in input.split(' ')) {
+    val split = input.split(Regex("-|\\+"))
 
-        val amountMinus = group.count {it == '-'}
-        val addingNext = amountMinus % 2 == 0
-
-        val numberString = group.filter {it.isDigit()}
-
-        if (numberString.isNotBlank()) {
-            val number = numberString.toInt()
-            if (addingNext) sum += number else sum -= number
-        }
-    }
+    println(split)
 
     return sum
 }
