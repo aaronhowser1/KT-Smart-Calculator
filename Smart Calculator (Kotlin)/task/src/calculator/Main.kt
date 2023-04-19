@@ -1,5 +1,7 @@
 package calculator
 
+val knownVariables = mutableMapOf<String, Int>()
+
 fun main() {
 
     while (true) {
@@ -16,16 +18,50 @@ fun main() {
                     continue
                 }
 
-                try {
-                    println(calculate(input))
-                } catch (exception: Exception) {
-                    println(exception.message)
-                }
+                handleInput(input)
             }
         }
+
+        if (input == "/exit") break
+
     }
 
     println("Bye!")
+}
+
+fun handleInput(input: String) {
+    try {
+
+        val amountOfEquals = input.count {it == '='}
+        val amountOfOperators = input.count {it == '+' || it == '-'}
+
+        if (amountOfEquals > 0) {
+            if (amountOfEquals == 1) {
+                inputVariable(input)
+                return
+            } else {
+                throw IllegalArgumentException()
+            }
+        }
+
+        if (amountOfOperators > 0) {
+            calculate(input)
+            return
+        }
+
+        getVariable(input)
+
+    } catch (exception: IllegalArgumentException) {
+        println(exception.message)
+    }
+}
+
+fun inputVariable(input: String) {
+
+}
+
+fun getVariable(input: String) {
+
 }
 
 fun calculate(input: String): Int {
