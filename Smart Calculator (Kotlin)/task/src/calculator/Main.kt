@@ -22,8 +22,6 @@ fun main() {
             }
         }
 
-        if (input == "/exit") break
-
     }
 
     println("Bye!")
@@ -32,15 +30,22 @@ fun main() {
 fun handleInput(input: String) {
     try {
 
+        val input = input.filter {it != ' '}
+
         val amountOfEquals = input.count {it == '='}
         val amountOfOperators = input.count {it == '+' || it == '-'}
 
         if (amountOfEquals > 0) {
             if (amountOfEquals == 1) {
-                inputVariable(input)
+
+                val split = input.split('=')
+                val variableName = filterVariableName(split[0])
+                val variableValue = split[1].toInt()
+
+                setVariable(variableName, variableValue)
                 return
             } else {
-                throw IllegalArgumentException()
+                throw IllegalArgumentException("Too many equal signs")
             }
         }
 
@@ -49,20 +54,31 @@ fun handleInput(input: String) {
             return
         }
 
-        getVariable(input)
+        println(getVariable(input))
 
     } catch (exception: IllegalArgumentException) {
         println(exception.message)
     }
 }
 
-fun inputVariable(input: String) {
-
+fun setVariable(name: String, value: Int) {
+    knownVariables[name] = value
 }
 
-fun getVariable(input: String) {
+fun getVariable(name: String): Int {
+    val value = knownVariables[filterVariableName(name)] ?: throw IllegalArgumentException("Unknown variable")
 
+    return value
 }
+
+fun filterVariableName(input: String): String {
+    if (input.any { it !in 'a'..'z' && it !in 'A'..'Z' }) {
+        throw IllegalArgumentException("Invalid identifier")
+    }
+
+    return input
+}
+
 
 fun calculate(input: String): Int {
     var input = filterInput(input)
