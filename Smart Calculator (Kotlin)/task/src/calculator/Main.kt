@@ -8,14 +8,16 @@ fun main() {
         when (input) {
             "/exit" -> break
             "help" -> println("The program calculates the sum of numbers")
+            else -> {
+                if (input.first() != '/' ) {
+                    try {
+                        println(calculate(input))
+                    } catch (exception: Exception) {
+                        println(exception.message)
+                    }
+                }
+            }
         }
-
-        try {
-            println(calculate(input))
-        } catch (exception: Exception) {
-            println(exception.message)
-        }
-
     }
     println("Bye!")
 }
