@@ -7,18 +7,24 @@ fun main() {
 
         when (input) {
             "/exit" -> break
-            "help" -> println("The program calculates the sum of numbers")
+            "/help" -> println("The program calculates the sum of numbers")
             else -> {
-                if (input.first() != '/' ) {
-                    try {
-                        println(calculate(input))
-                    } catch (exception: Exception) {
-                        println(exception.message)
-                    }
+
+                if (input.isEmpty()) continue
+                if (input.first() == '/') {
+                    println("Unknown command")
+                    continue
+                }
+
+                try {
+                    println(calculate(input))
+                } catch (exception: Exception) {
+                    println(exception.message)
                 }
             }
         }
     }
+
     println("Bye!")
 }
 
