@@ -50,7 +50,7 @@ fun handleInput(input: String) {
         }
 
         if (amountOfOperators > 0) {
-            calculate(filteredInput)
+            println(calculate(filteredInput))
             return
         }
 
@@ -106,7 +106,13 @@ fun calculate(input: String): Int {
     var sum = 0
 
     for (number in split) {
-        sum += number.toInt()
+
+        sum += if (number.any {it.isLetter()}) {
+            getVariable(number)
+        } else {
+            number.toInt()
+        }
+
     }
 
     return sum
@@ -115,8 +121,18 @@ fun calculate(input: String): Int {
 fun filterInput(input: String): String {
     var filteredInput = input.filter {it != ' '}
 
-    if (filteredInput.any { !it.isDigit() && it != '+' && it != '-'}) {
-        throw (IllegalArgumentException("Invalid expression"))
+    //Check to make sure that, if there are any characters, they are valid saved variables
+    val splitInput = input.split(Regex("-|\\+"))
+    for (group in splitInput) {
+        if (group.any { it.isLetter() }) {
+            //getVariable will throw an exception if the variable doesn't exist, or if it's invalid
+            getVariable(group)
+        }
+
+        //Might not be needed, as it would break above
+        if (group.any { !it.isLetterOrDigit() && it != '+' && it != '-'}) {
+            throw (IllegalArgumentException("Invalid expression"))
+        }
     }
 
     while (filteredInput.contains("--")) {
