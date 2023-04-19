@@ -4,33 +4,24 @@ fun main() {
 
     while (true) {
         val input = readln()
-        if (input == "/exit") break
-        if (input == "/help") {
-            println("The program calculates the sum of numbers")
-            continue
-        }
-        if (input.isBlank()) continue
 
-        println(calculate(input))
+        when (input) {
+            "/exit" -> break
+            "help" -> println("The program calculates the sum of numbers")
+        }
+
+        try {
+            println(calculate(input))
+        } catch (exception: Exception) {
+            println(exception.message)
+        }
 
     }
     println("Bye!")
 }
 
 fun calculate(input: String): Int {
-    var input = input.filter { it != ' ' }
-
-    //Get rid of repeated symbols
-    while (input.contains("--")) {
-        input = input.replace("--","+")
-    }
-    while (input.contains("++")) {
-        input = input.replace("++","+")
-    }
-    while (input.contains("+-") || input.contains("-+")) {
-        input = input.replace("+-","-")
-        input = input.replace("-+","-")
-    }
+    var input = filterInput(input)
 
     //Get ready to split
     input = input.replace("+"," +")
@@ -45,4 +36,27 @@ fun calculate(input: String): Int {
     }
 
     return sum
+}
+
+fun filterInput(input: String): String {
+    var input = input.filter {it != ' '}
+
+    if (input.any { !it.isDigit() && it != '+' && it != '-'}) {
+        throw (IllegalArgumentException("Invalid expression"))
+    }
+
+    while (input.contains("--")) {
+        input = input.replace("--","+")
+    }
+    while (input.contains("++")) {
+        input = input.replace("++","+")
+    }
+    while (input.contains("+-") || input.contains("-+")) {
+        input = input.replace("+-","-")
+        input = input.replace("-+","-")
+    }
+
+    if (!input.last().isDigit()) throw (IllegalArgumentException("Invalid expression"))
+
+    return input
 }
