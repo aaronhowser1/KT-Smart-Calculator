@@ -18,12 +18,31 @@ fun main() {
 }
 
 fun calculate(input: String): Int {
+    var input = input.filter { it != ' ' }
+
+    //Get rid of doubles
+    while (input.contains("++")) {
+        input = input.replace("++","+")
+    }
+    while (input.contains("--")) {
+        input = input.replace("--","+")
+    }
+    while (input.contains("+-") || input.contains("-+")) {
+        input = input.replace("+-","-")
+        input = input.replace("-+","-")
+    }
+
+    //Get ready to split
+    input = input.replace("+"," +")
+    input = input.replace("-", " -")
+
+    val split = input.split(' ')
 
     var sum = 0
 
-    val split = input.split(Regex("-|\\+"))
-
-    println(split)
+    for (number in split) {
+        sum += number.toInt()
+    }
 
     return sum
 }
