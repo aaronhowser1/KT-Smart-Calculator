@@ -30,39 +30,46 @@ fun main() {
 fun handleInput(input: String) {
     try {
 
-        val input = input.filter {it != ' '}
+        val filteredInput = input.filter {it != ' '}
 
-        val amountOfEquals = input.count {it == '='}
-        val amountOfOperators = input.count {it == '+' || it == '-'}
+        val amountOfEquals = filteredInput.count {it == '='}
+        val amountOfOperators = filteredInput.count {it == '+' || it == '-'}
 
         if (amountOfEquals > 0) {
             if (amountOfEquals == 1) {
 
-                val split = input.split('=')
+                val split = filteredInput.split('=')
                 val variableName = filterVariableName(split[0])
-                val variableValue = split[1].toInt()
+                val variableValue = split[1]
 
                 setVariable(variableName, variableValue)
                 return
             } else {
-                throw IllegalArgumentException("Too many equal signs")
+                throw IllegalArgumentException("Invalid assignment")
             }
         }
 
         if (amountOfOperators > 0) {
-            calculate(input)
+            calculate(filteredInput)
             return
         }
 
-        println(getVariable(input))
+        println(getVariable(filteredInput))
 
     } catch (exception: IllegalArgumentException) {
         println(exception.message)
     }
 }
 
-fun setVariable(name: String, value: Int) {
-    knownVariables[name] = value
+fun setVariable(name: String, value: String) {
+
+    val valueIsNumber = value.all {it.isDigit()}
+
+    if (valueIsNumber) {
+        knownVariables[name] = value.toInt()
+    } else {
+        knownVariables[name] = getVariable(filterVariableValue(value))
+    }
 }
 
 fun getVariable(name: String): Int {
@@ -79,15 +86,22 @@ fun filterVariableName(input: String): String {
     return input
 }
 
+fun filterVariableValue(input: String): String {
+    if (input.any { it !in 'a'..'z' && it !in 'A'..'Z' }) {
+        throw IllegalArgumentException("Invalid assignment")
+    }
+
+    return input
+}
 
 fun calculate(input: String): Int {
-    var input = filterInput(input)
+    var filteredInput = filterInput(input)
 
     //Get ready to split
-    input = input.replace("+"," +")
-    input = input.replace("-", " -")
+    filteredInput = filteredInput.replace("+"," +")
+    filteredInput = filteredInput.replace("-", " -")
 
-    val split = input.split(' ').filter { it.isNotBlank() }
+    val split = filteredInput.split(' ').filter { it.isNotBlank() }
 
     var sum = 0
 
@@ -99,24 +113,24 @@ fun calculate(input: String): Int {
 }
 
 fun filterInput(input: String): String {
-    var input = input.filter {it != ' '}
+    var filteredInput = input.filter {it != ' '}
 
-    if (input.any { !it.isDigit() && it != '+' && it != '-'}) {
+    if (filteredInput.any { !it.isDigit() && it != '+' && it != '-'}) {
         throw (IllegalArgumentException("Invalid expression"))
     }
 
-    while (input.contains("--")) {
-        input = input.replace("--","+")
+    while (filteredInput.contains("--")) {
+        filteredInput = filteredInput.replace("--","+")
     }
-    while (input.contains("++")) {
-        input = input.replace("++","+")
+    while (filteredInput.contains("++")) {
+        filteredInput = filteredInput.replace("++","+")
     }
-    while (input.contains("+-") || input.contains("-+")) {
-        input = input.replace("+-","-")
-        input = input.replace("-+","-")
+    while (filteredInput.contains("+-") || filteredInput.contains("-+")) {
+        filteredInput = filteredInput.replace("+-","-")
+        filteredInput = filteredInput.replace("-+","-")
     }
 
-    if (!input.last().isDigit()) throw (IllegalArgumentException("Invalid expression"))
+    if (!filteredInput.last().isDigit()) throw (IllegalArgumentException("Invalid expression"))
 
-    return input
+    return filteredInput
 }
