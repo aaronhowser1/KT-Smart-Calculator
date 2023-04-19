@@ -20,12 +20,12 @@ fun main() {
 fun calculate(input: String): Int {
     var input = input.filter { it != ' ' }
 
-    //Get rid of doubles
-    while (input.contains("++")) {
-        input = input.replace("++","+")
-    }
+    //Get rid of repeated symbols
     while (input.contains("--")) {
         input = input.replace("--","+")
+    }
+    while (input.contains("++")) {
+        input = input.replace("++","+")
     }
     while (input.contains("+-") || input.contains("-+")) {
         input = input.replace("+-","-")
@@ -36,7 +36,7 @@ fun calculate(input: String): Int {
     input = input.replace("+"," +")
     input = input.replace("-", " -")
 
-    val split = input.split(' ')
+    val split = input.split(' ').filter { it.isNotBlank() }
 
     var sum = 0
 
