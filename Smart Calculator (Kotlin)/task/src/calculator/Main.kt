@@ -105,12 +105,25 @@ fun calculate(input: String): Int {
 
     var sum = 0
 
-    for (number in split) {
+    for (group in split) {
 
-        sum += if (number.any {it.isLetter()}) {
-            getVariable(number)
+        if (group.any {it.isLetter()}) {
+            //Since group could be "+a" rather than just "a"
+
+            var variable = group
+
+            val isSubtracting = group.first() == '-'
+            if (isSubtracting || group.first() == '+') {
+                variable = variable.drop(1)
+            }
+
+            if (isSubtracting) {
+                sum -= getVariable(variable)
+            } else {
+                sum += getVariable(variable)
+            }
         } else {
-            number.toInt()
+            sum += group.toInt()
         }
 
     }
@@ -125,8 +138,9 @@ fun filterInput(input: String): String {
     val splitInput = input.split(Regex("-|\\+"))
     for (group in splitInput) {
         if (group.any { it.isLetter() }) {
-            //getVariable will throw an exception if the variable doesn't exist, or if it's invalid
             getVariable(group)
+            //If the above didn't throw an exception, the group is good, and it can continue
+            continue
         }
 
         //Might not be needed, as it would break above
@@ -146,7 +160,7 @@ fun filterInput(input: String): String {
         filteredInput = filteredInput.replace("-+","-")
     }
 
-    if (!filteredInput.last().isDigit()) throw (IllegalArgumentException("Invalid expression"))
+    if (!filteredInput.last().isLetterOrDigit()) throw (IllegalArgumentException("Invalid expression"))
 
     return filteredInput
 }
